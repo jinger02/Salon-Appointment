@@ -54,7 +54,11 @@ APPOINT(){
         fi
         # ask for appointment time
         CUSTOMER_NAME_RESULT=$($PSQL "SELECT name FROM customers WHERE phone='$PHONE_NUMBER'")
+        CUSTOMER_ID_RESULT=$($PSQL "SELECT customer_id FROM customers WHERE phone='$PHONE_NUMBER'")
         echo "What time would you like your cut,$CUSTOMER_NAME_RESULT?"
+        read TIME
+        # insert appointment time
+        INSERT_APPOINTMENT=$($PSQL INSERT INTO appointments(customer_id,service_id,time) VALUES($CUSTOMER_ID_RESULT,$SERVICE_ID_RESULT,'$TIME))
 
 
     fi
