@@ -22,6 +22,7 @@ MAIN(){
     
     #check if SERVICE_ID_SELECTED is in services database
     SERVICE_ID_RESULT=$($PSQL "SELECT service_id FROM services WHERE service_id = '$SERVICE_ID_SELECTED'")
+    SERVICE_NAME_RESULT=$($PSQL "SELECT name FROM services WHERE service_id = '$SERVICE_ID_SELECTED'")
     if [[ -z $SERVICE_ID_RESULT ]]
     then
       MAIN "I could not find that service. What would you like today?"
@@ -55,12 +56,15 @@ APPOINT(){
         # ask for appointment time
         CUSTOMER_NAME_RESULT=$($PSQL "SELECT name FROM customers WHERE phone='$PHONE_NUMBER'")
         CUSTOMER_ID_RESULT=$($PSQL "SELECT customer_id FROM customers WHERE phone='$PHONE_NUMBER'")
-        echo "What time would you like your cut,$CUSTOMER_NAME_RESULT?"
+        echo "What time would you like your$SERVICE_NAME_RESULT,$CUSTOMER_NAME_RESULT?"
         read TIME
+        
         # insert appointment time
-        INSERT_APPOINTMENT=$($PSQL INSERT INTO appointments(customer_id,service_id,time) VALUES($CUSTOMER_ID_RESULT,$SERVICE_ID_RESULT,'$TIME))
-
-
+        INSERT_APPOINTMENT=$($PSQL "INSERT INTO appointments(customer_id,service_id,time) VALUES($CUSTOMER_ID_RESULT,$SERVICE_ID_RESULT,'$TIME')")
+        if [[ $INSERT_APPOINTMENT == "INSERT 0 1" ]]
+        then
+            echo "I have put you for a $SERVICE_NAME_RESULT at $TIME,$CUSTOMER_NAME_RESULT."
+        fi
     fi
 }
 
